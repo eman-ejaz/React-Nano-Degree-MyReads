@@ -4,19 +4,17 @@ import './App.css';
 import BookShelves from './components/BookShelves';
 import Book from './components/Book';
 
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
 
 const BooksApp = () => {
   const [books, setBooks] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [booksSearchResult, setBooksSearchResult] = useState([]);
-  const [mapOfIdToBooks, setMapOfIdToBooks] = useState(new Map());
 
   useEffect(() => {
     // Get all books from the API when the component first renders and generate record of all available books.
     BooksAPI.getAll().then((response) => {
       setBooks(response);
-      setMapOfIdToBooks(createMapOfBooks(response));
     });
   }, []);
 
@@ -42,34 +40,29 @@ const BooksApp = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
-  const createMapOfBooks = (books) => {
-    // Manage record of all the available books
-    const map = new Map();
-    books.map((book) => map.set(book.id, book));
-    return map;
-  };
-
   const bookShelfChangeHandler = (bookData) => {
     // Handle the change of shelf of a book
-    let updatedBooks = books.map((book) => {
+    let isNewBook = true;
+    let changedShelvesBooks = books.map((book) => {
       if (book.id === bookData.book.id) {
+        isNewBook = false;
         book.shelf = bookData.newShelf;
         return book;
       }
       return book;
     });
-    // Add shelf to newly added book from search
-    if (!mapOfIdToBooks.has(bookData.book.id)) {
+
+    if (isNewBook) {
       bookData.book.shelf = bookData.newShelf;
-      updatedBooks.push(bookData.book);
+      changedShelvesBooks.push(bookData.book);
     }
-    setBooks(updatedBooks);
     BooksAPI.update(bookData.book, bookData.newShelf);
+    setBooks(changedShelvesBooks);
   };
 
   return (
     <div className='app'>
-      <Router>
+      <BrowserRouter>
         <Switch>
           <Route path='/search'>
             <div className='search-books'>
@@ -123,7 +116,7 @@ const BooksApp = () => {
             </div>
           </Route>
         </Switch>
-      </Router>
+      </BrowserRouter>
     </div>
   );
 };
