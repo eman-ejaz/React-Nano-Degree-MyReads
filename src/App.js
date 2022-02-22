@@ -13,6 +13,7 @@ const BooksApp = () => {
   const [mapOfIdToBooks, setMapOfIdToBooks] = useState(new Map());
 
   useEffect(() => {
+    // Get all books from the API when the component first renders and generate record of all available books.
     BooksAPI.getAll().then((response) => {
       setBooks(response);
       setMapOfIdToBooks(createMapOfBooks(response));
@@ -20,6 +21,7 @@ const BooksApp = () => {
   }, []);
 
   useEffect(() => {
+    // Search books whenever there is change in search bar text.
     if (searchQuery)
       BooksAPI.search(searchQuery).then((response) => {
         if (response.error) setBooksSearchResult([]);
@@ -41,12 +43,14 @@ const BooksApp = () => {
   }, [searchQuery]);
 
   const createMapOfBooks = (books) => {
+    // Manage record of all the available books
     const map = new Map();
     books.map((book) => map.set(book.id, book));
     return map;
   };
 
   const bookShelfChangeHandler = (bookData) => {
+    // Handle the change of shelf of a book
     let updatedBooks = books.map((book) => {
       if (book.id === bookData.book.id) {
         book.shelf = bookData.newShelf;
@@ -54,6 +58,7 @@ const BooksApp = () => {
       }
       return book;
     });
+    // Add shelf to newly added book from search
     if (!mapOfIdToBooks.has(bookData.book.id)) {
       bookData.book.shelf = bookData.newShelf;
       updatedBooks.push(bookData.book);
