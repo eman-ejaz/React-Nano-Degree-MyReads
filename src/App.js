@@ -53,6 +53,7 @@ const BooksApp = () => {
     });
 
     if (isNewBook) {
+      // if this is a new book, this is added from search results
       bookData.book.shelf = bookData.newShelf;
       changedShelvesBooks.push(bookData.book);
     }
