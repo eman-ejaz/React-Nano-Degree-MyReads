@@ -28,4 +28,8 @@ ShelfChanger.propTypes = {
   currentShelf: PropTypes.string.isRequired,
 };
 
+ShelfChanger.defaultProps = {
+  currentShelf: '',
+};
+
 export default ShelfChanger;
